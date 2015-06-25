@@ -1,7 +1,5 @@
 package me.electroid.nicknamer;
 
-import java.io.IOException;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Skin;
@@ -9,19 +7,12 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import java.util.Random;
 
 /**
  * A basic random identity generating plugin.
  * @author ElectroidFilms
  */
 public class NicknamePlugin extends JavaPlugin {
-
-    private static final int MIN_USERNAME_LENGTH = 4;
-    private static final int[] OCN_PUNISHMENT_RANGE = {1000, 10000};
-    private static final String OCN_PUNISHMENT_PAGE = "http://oc.tc/punishments?page=";
 
     @Override
     public void onEnable() {}
@@ -44,8 +35,8 @@ public class NicknamePlugin extends JavaPlugin {
 
         @Override
         public void run() {
-            MinecraftNameGenerator gen = new MinecraftNameGenerator(MIN_USERNAME_LENGTH);
-            String name = gen.generate(getSeedFromOcn());
+            MinecraftNameGenerator gen = new MinecraftNameGenerator(GeneratorUtil.MIN_USERNAME_LENGTH);
+            String name = gen.generate(GeneratorUtil.getSeedFromOcn());
             Skin fakeSkin = getRandomSkin();
             for (Player p : Bukkit.getOnlinePlayers()) {
                 if (!p.equals(player) && !p.hasPermission("nickname.see") && !p.isOp()) {
@@ -100,28 +91,12 @@ public class NicknamePlugin extends JavaPlugin {
     }
 
     /**
-    * Get a banned user from Overcast Network's punishments page.
-    * @return The banned username.
-    */
-    private String getSeedFromOcn() {
-        /** Backup username in the event of any errors. */
-        String seed = "_creeperNoob";
-        try {
-            Document doc = Jsoup.connect(OCN_PUNISHMENT_PAGE + randomWithinRange(OCN_PUNISHMENT_RANGE[0], OCN_PUNISHMENT_RANGE[1])).get();
-            seed = doc.select("tbody").first().select("td").get(1).select("a").attr("href");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return seed.substring(1, seed.length());
-    }
-
-    /**
     * Get a random skin from any players online.
     * @return The random skin.
     */
     private Skin getRandomSkin() {
         Skin skin = Skin.EMPTY;
-        int index = random(Bukkit.getOnlinePlayers().size());
+        int index = GeneratorUtil.random(Bukkit.getOnlinePlayers().size());
         int count = 0;
         for (Player p : Bukkit.getOnlinePlayers()) {
             if (index == count) {
@@ -132,14 +107,6 @@ public class NicknamePlugin extends JavaPlugin {
         return skin;
     }
 
-    private int random(int range) {
-        if (range != 0)
-            return new Random().nextInt(range);
-        return 0;
-    }
 
-    private int randomWithinRange(int start, int end) {
-        return new Random().nextInt(end - start) + start;
-    }
 
 }

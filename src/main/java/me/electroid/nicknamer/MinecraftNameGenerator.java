@@ -77,7 +77,7 @@ public class MinecraftNameGenerator {
 
     /**
     * Recursive methods to ensure username is always valid.
-    * @param seeds The username to verify,
+    * @param username The username to verify,
     * @return The verifed username.
     */
     private String verifyUsername(String username) {
